@@ -1,3 +1,11 @@
-import { CreateCatRequest } from "./CreateCatRequest"
+import { IsInt, IsOptional, IsString } from "class-validator"
 
-export type UpdateCatRequest = Partial<CreateCatRequest>
+export class UpdateCatRequest {
+  @IsString()
+  @IsOptional()
+  name: string
+
+  @IsInt()
+  @IsOptional()
+  age: number
+}

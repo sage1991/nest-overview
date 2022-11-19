@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from "@nestjs/common"
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put } from "@nestjs/common"
 
 import { CreateCatRequest, UpdateCatRequest } from "../model"
 import { CatService } from "../services"
@@ -13,7 +13,7 @@ export class CatsController {
   }
 
   @Get(":id")
-  findOne(@Param("id") id: string) {
+  findOne(@Param("id", ParseIntPipe) id: number) {
     return this.service.findOne(id)
   }
 
@@ -23,12 +23,12 @@ export class CatsController {
   }
 
   @Put(":id")
-  update(@Param("id") id: string, @Body() request: UpdateCatRequest) {
+  update(@Param("id", ParseIntPipe) id: number, @Body() request: UpdateCatRequest) {
     return this.service.update(id, request)
   }
 
   @Delete(":id")
-  delete(@Param("id") id: string) {
+  delete(@Param("id", ParseIntPipe) id: number) {
     return this.service.delete(id)
   }
 }

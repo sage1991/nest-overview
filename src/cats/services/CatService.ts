@@ -9,7 +9,7 @@ export class CatService {
     return cats
   }
 
-  findOne(id: string) {
+  findOne(id: number) {
     const cat = cats.find((cat) => cat.id === id)
     if (!cat) {
       throw new NotFoundException(`Cannot found cat for given id: ${id}`)
@@ -18,7 +18,7 @@ export class CatService {
   }
 
   create(request: CreateCatRequest) {
-    const id = `${Date.now()}`
+    const id = Date.now()
     const cat: Cat = {
       ...request,
       id
@@ -27,7 +27,7 @@ export class CatService {
     return cat
   }
 
-  update(id: string, request: UpdateCatRequest) {
+  update(id: number, request: UpdateCatRequest) {
     const index = cats.findIndex((cat) => cat.id === id)
     if (index === -1) {
       throw new NotFoundException(`Cannot found cat for given id: ${id}`)
@@ -39,7 +39,7 @@ export class CatService {
     return cats[index]
   }
 
-  delete(id: string) {
+  delete(id: number) {
     const index = cats.findIndex((cat) => cat.id === id)
     if (index === -1) {
       throw new NotFoundException(`Cannot found cat for given id: ${id}`)

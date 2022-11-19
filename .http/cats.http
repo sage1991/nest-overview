@@ -10,8 +10,7 @@ Content-Type: application/json
 
 {
   "name": "츄르",
-  "age": 1,
-  "breed": ""
+  "age": 1
 }
 
 ### Update Cat
@@ -19,7 +18,7 @@ PUT http://localhost:3000/cats/1
 Content-Type: application/json
 
 {
-  "age": 10
+  "age": 12
 }
 
 ### Delete Cat

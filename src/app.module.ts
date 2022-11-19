@@ -1,5 +1,11 @@
-import { MiddlewareConsumer, Module, NestModule, RequestMethod } from "@nestjs/common"
-import { APP_FILTER } from "@nestjs/core"
+import {
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  RequestMethod,
+  ValidationPipe
+} from "@nestjs/common"
+import { APP_FILTER, APP_PIPE } from "@nestjs/core"
 
 import { LoggerMiddleware, HttpExceptionFilter } from "./core"
 import { CatModule } from "./cats"
@@ -10,6 +16,10 @@ import { CatModule } from "./cats"
     {
       provide: APP_FILTER,
       useClass: HttpExceptionFilter
+    },
+    {
+      provide: APP_PIPE,
+      useClass: ValidationPipe
     }
   ]
 })

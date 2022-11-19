@@ -1,3 +1,11 @@
-import { Cat } from "./Cat"
+import { IsInt, IsNotEmpty, IsString } from "class-validator"
 
-export type CreateCatRequest = Omit<Cat, "id">
+export class CreateCatRequest {
+  @IsString()
+  @IsNotEmpty()
+  name: string
+
+  @IsInt()
+  @IsNotEmpty()
+  age: number
+}
