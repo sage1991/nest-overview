@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from "@nestjs/common"
+import { Injectable, NotFoundException } from "@nestjs/common"
 
 import { Cat, CreateCatRequest, UpdateCatRequest } from "../model"
 import { cats } from "../__mock__"
@@ -12,7 +12,7 @@ export class CatService {
   findOne(id: string) {
     const cat = cats.find((cat) => cat.id === id)
     if (!cat) {
-      throw new HttpException("Cat not found", HttpStatus.NOT_FOUND)
+      throw new NotFoundException(`Cannot found cat for given id: ${id}`)
     }
     return cat
   }
@@ -29,23 +29,21 @@ export class CatService {
 
   update(id: string, request: UpdateCatRequest) {
     const index = cats.findIndex((cat) => cat.id === id)
-    let cat: Cat | null = null
-    if (index >= 0) {
-      cat = {
-        ...cats[index],
-        ...request
-      }
-      cats[index] = cat
+    if (index === -1) {
+      throw new NotFoundException(`Cannot found cat for given id: ${id}`)
     }
-    return cat
+    cats[index] = {
+      ...cats[index],
+      ...request
+    }
+    return cats[index]
   }
 
   delete(id: string) {
     const index = cats.findIndex((cat) => cat.id === id)
-    let cat: Cat | null = null
-    if (index >= 0) {
-      cat = cats.splice(index, 1)[0]
+    if (index === -1) {
+      throw new NotFoundException(`Cannot found cat for given id: ${id}`)
     }
-    return cat
+    return cats.splice(index, 1)[0]
   }
 }
