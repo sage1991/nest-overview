@@ -1,0 +1,26 @@
+### Find all cats
+GET http://localhost:3000/cats
+
+### Find one cat
+GET http://localhost:3000/cats/2
+
+### Create cat
+POST http://localhost:3000/cats
+Content-Type: application/json
+
+{
+  "name": "츄르",
+  "age": 1,
+  "breed": ""
+}
+
+### Update Cat
+PUT http://localhost:3000/cats/1
+Content-Type: application/json
+
+{
+  "age": 10
+}
+
+### Delete Cat
+DELETE http://localhost:3000/cats/2
