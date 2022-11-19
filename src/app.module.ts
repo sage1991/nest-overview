@@ -1,10 +1,17 @@
 import { MiddlewareConsumer, Module, NestModule, RequestMethod } from "@nestjs/common"
+import { APP_FILTER } from "@nestjs/core"
 
+import { LoggerMiddleware, HttpExceptionFilter } from "./core"
 import { CatModule } from "./cats"
-import { LoggerMiddleware } from "./core"
 
 @Module({
-  imports: [CatModule]
+  imports: [CatModule],
+  providers: [
+    {
+      provide: APP_FILTER,
+      useClass: HttpExceptionFilter
+    }
+  ]
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
