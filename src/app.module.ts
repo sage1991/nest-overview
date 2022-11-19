@@ -5,9 +5,9 @@ import {
   RequestMethod,
   ValidationPipe
 } from "@nestjs/common"
-import { APP_FILTER, APP_PIPE } from "@nestjs/core"
+import { APP_FILTER, APP_GUARD, APP_PIPE } from "@nestjs/core"
 
-import { LoggerMiddleware, HttpExceptionFilter } from "./core"
+import { LoggerMiddleware, HttpExceptionFilter, RoleGuard } from "./core"
 import { CatModule } from "./cats"
 
 @Module({
@@ -20,6 +20,10 @@ import { CatModule } from "./cats"
     {
       provide: APP_PIPE,
       useClass: ValidationPipe
+    },
+    {
+      provide: APP_GUARD,
+      useClass: RoleGuard
     }
   ]
 })
