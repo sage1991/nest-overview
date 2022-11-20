@@ -2,9 +2,14 @@ import { Injectable, NestMiddleware } from "@nestjs/common"
 import { NextFunction, Request, Response } from "express"
 
 @Injectable()
-export class LoggerMiddleware implements NestMiddleware {
+export class UserMiddleware implements NestMiddleware {
   use(req: Request, res: Response, next: NextFunction): any {
-    console.log("headers", req.headers)
+    req.user = {
+      id: "aGFycnkua2FuZQ==",
+      name: "HS Kim",
+      age: 100,
+      roles: ["admin"]
+    }
     next()
   }
 }

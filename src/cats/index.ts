@@ -1,4 +1,4 @@
 export * from "./controllers"
 export * from "./services"
-export * from "./model"
+export * from "./models"
 export * from "./cat.module"

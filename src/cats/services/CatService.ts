@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from "@nestjs/common"
 
-import { Cat, CreateCatRequest, UpdateCatRequest } from "../model"
+import { Cat, CreateCatRequest, UpdateCatRequest } from "../models"
 import { cats } from "../__mock__"
 
 @Injectable()

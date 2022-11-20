@@ -2,12 +2,11 @@
 GET http://localhost:3000/cats
 
 ### Find one cat
-GET http://localhost:3000/cats/2
+GET http://localhost:3000/cats/3
 
 ### Create cat
 POST http://localhost:3000/cats
 Content-Type: application/json
-Role: admin
 
 {
   "name": "츄르",

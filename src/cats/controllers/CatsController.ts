@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put } from "@nestjs/common"
 
-import { CreateCatRequest, UpdateCatRequest } from "../model"
+import { CreateCatRequest, UpdateCatRequest } from "../models"
 import { CatService } from "../services"
 import { Roles } from "../../core"
 

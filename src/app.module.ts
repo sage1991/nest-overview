@@ -1,35 +1,16 @@
-import {
-  MiddlewareConsumer,
-  Module,
-  NestModule,
-  RequestMethod,
-  ValidationPipe
-} from "@nestjs/common"
-import { APP_FILTER, APP_GUARD, APP_PIPE } from "@nestjs/core"
+import { MiddlewareConsumer, Module, NestModule, RequestMethod } from "@nestjs/common"
 
-import { LoggerMiddleware, HttpExceptionFilter, RoleGuard } from "./core"
+import { UserMiddleware, CoreModule } from "./core"
 import { CatModule } from "./cats"
+import { TimerModule } from "./timer"
+import { UserModule } from "./user"
 
 @Module({
-  imports: [CatModule],
-  providers: [
-    {
-      provide: APP_FILTER,
-      useClass: HttpExceptionFilter
-    },
-    {
-      provide: APP_PIPE,
-      useClass: ValidationPipe
-    },
-    {
-      provide: APP_GUARD,
-      useClass: RoleGuard
-    }
-  ]
+  imports: [CoreModule, CatModule, TimerModule, UserModule]
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(LoggerMiddleware).forRoutes({
+    consumer.apply(UserMiddleware).forRoutes({
       path: "*",
       method: RequestMethod.ALL
     })

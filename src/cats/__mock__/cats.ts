@@ -1,4 +1,4 @@
-import { Cat } from "../model"
+import { Cat } from "../models"
 
 export const cats: Cat[] = [
   {
