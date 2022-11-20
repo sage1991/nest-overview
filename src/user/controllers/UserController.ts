@@ -1,11 +1,33 @@
-import { Controller, Get } from "@nestjs/common"
+import { Body, Controller, Delete, Get, Param, Post } from "@nestjs/common"
 
-import { User, UserModel } from "../../core"
+import { UserService } from "../services"
+import { Bypass } from "../../core"
+import { CreateUserRequest } from "../models"
 
 @Controller("user")
 export class UserController {
+  constructor(private readonly service: UserService) {}
+
+  @Get()
+  @Bypass()
+  findAll() {
+    return this.service.findAll()
+  }
+
   @Get(":id")
-  findOne(@User() user: UserModel) {
-    return user
+  @Bypass()
+  findOne(@Param("id") id: string) {
+    return this.service.findOne(id)
+  }
+
+  @Post()
+  @Bypass()
+  create(@Body() request: CreateUserRequest) {
+    return this.service.create(request)
+  }
+
+  @Delete(":id")
+  remove(@Param("id") id: string) {
+    return this.service.delete(id)
   }
 }

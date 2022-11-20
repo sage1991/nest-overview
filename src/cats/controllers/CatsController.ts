@@ -1,38 +1,38 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put } from "@nestjs/common"
+import { Body, Controller, Delete, Get, Headers, Param, Post, Put } from "@nestjs/common"
 
 import { CreateCatRequest, UpdateCatRequest } from "../models"
 import { CatService } from "../services"
-import { Roles } from "../../core"
 
 @Controller("cats")
 export class CatsController {
   constructor(private readonly service: CatService) {}
 
   @Get()
-  findAll() {
-    return this.service.findAll()
+  findAll(@Headers("user-id") userId: string) {
+    return this.service.findAll(userId)
   }
 
   @Get(":id")
-  findOne(@Param("id", ParseIntPipe) id: number) {
-    return this.service.findOne(id)
+  findOne(@Headers("user-id") userId: string, @Param("id") id: string) {
+    return this.service.findOne(userId, id)
   }
 
   @Post()
-  @Roles("admin")
-  create(@Body() request: CreateCatRequest) {
-    return this.service.create(request)
+  create(@Headers("user-id") userId: string, @Body() request: CreateCatRequest) {
+    return this.service.create(userId, request)
   }
 
   @Put(":id")
-  @Roles("admin")
-  update(@Param("id", ParseIntPipe) id: number, @Body() request: UpdateCatRequest) {
-    return this.service.update(id, request)
+  update(
+    @Headers("user-id") userId: string,
+    @Param("id") id: string,
+    @Body() request: UpdateCatRequest
+  ) {
+    return this.service.update(userId, id, request)
   }
 
   @Delete(":id")
-  @Roles("admin")
-  delete(@Param("id", ParseIntPipe) id: number) {
-    return this.service.delete(id)
+  delete(@Headers("user-id") userId: string, @Param("id") id: string) {
+    return this.service.delete(userId, id)
   }
 }

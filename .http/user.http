@@ -1,2 +1,17 @@
+### Find all user
+GET http://localhost:3000/user
+
 ### Find one user
+GET http://localhost:3000/user/1
+
+### Create user
+POST http://localhost:3000/user
+Content-Type: application/json
+
+{
+  "firstName": "harry",
+  "lastName": "kane"
+}
+
+### Delete user
 GET http://localhost:3000/user/1

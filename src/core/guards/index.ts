@@ -1,1 +1,1 @@
-export * from "./RoleGuard"
+export * from "./AuthGuard"

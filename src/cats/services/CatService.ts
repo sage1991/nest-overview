@@ -1,49 +1,50 @@
-import { Injectable, NotFoundException } from "@nestjs/common"
+import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common"
+import { InjectRepository } from "@nestjs/typeorm"
+import { Repository } from "typeorm"
 
-import { Cat, CreateCatRequest, UpdateCatRequest } from "../models"
-import { cats } from "../__mock__"
+import { CreateCatRequest, UpdateCatRequest } from "../models"
+import { CatEntity } from "../entities"
+import { UserEntity } from "../../user/entities"
 
 @Injectable()
 export class CatService {
-  findAll() {
-    return cats
+  constructor(
+    @InjectRepository(CatEntity) private readonly catRepository: Repository<CatEntity>,
+    @InjectRepository(UserEntity) private readonly userRepository: Repository<UserEntity>
+  ) {}
+
+  findAll(userId: string) {
+    return this.catRepository.find({ where: { owner: { id: userId } } })
   }
 
-  findOne(id: number) {
-    const cat = cats.find((cat) => cat.id === id)
+  async findOne(userId: string, id: string) {
+    const cat = await this.catRepository.findOneBy({ id, owner: { id: userId } })
     if (!cat) {
       throw new NotFoundException(`Cannot found cat for given id: ${id}`)
     }
     return cat
   }
 
-  create(request: CreateCatRequest) {
-    const id = Date.now()
-    const cat: Cat = {
-      ...request,
-      id
+  async create(userId: string, request: CreateCatRequest) {
+    const user = await this.userRepository.findOneBy({ id: userId })
+    if (!user) {
+      throw new BadRequestException(`Invalid user id: ${userId}`)
     }
-    cats.push(cat)
-    return cat
+    const cat = CatEntity.from(request)
+    cat.owner = user
+    return this.catRepository.save(cat)
   }
 
-  update(id: number, request: UpdateCatRequest) {
-    const index = cats.findIndex((cat) => cat.id === id)
-    if (index === -1) {
+  async update(userId: string, id: string, request: UpdateCatRequest) {
+    const cat = await this.catRepository.findOneBy({ id, owner: { id: userId } })
+    if (!cat) {
       throw new NotFoundException(`Cannot found cat for given id: ${id}`)
     }
-    cats[index] = {
-      ...cats[index],
-      ...request
-    }
-    return cats[index]
+    cat.update(request)
+    return this.catRepository.save(cat)
   }
 
-  delete(id: number) {
-    const index = cats.findIndex((cat) => cat.id === id)
-    if (index === -1) {
-      throw new NotFoundException(`Cannot found cat for given id: ${id}`)
-    }
-    return cats.splice(index, 1)[0]
+  delete(userId: string, id: string) {
+    return this.catRepository.delete({ id, owner: { id: userId } })
   }
 }
