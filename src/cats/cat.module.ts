@@ -1,10 +1,11 @@
 import { Module } from "@nestjs/common"
 import { TypeOrmModule } from "@nestjs/typeorm"
 
+import { UserEntity } from "../user/entities"
+
 import { CatsController } from "./controllers"
 import { CatService } from "./services"
 import { CatEntity } from "./entities"
-import { UserEntity } from "../user/entities"
 
 @Module({
   controllers: [CatsController],

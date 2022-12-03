@@ -1,10 +1,12 @@
 import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common"
+import { plainToInstance } from "class-transformer"
 import { InjectRepository } from "@nestjs/typeorm"
 import { Repository } from "typeorm"
 
+import { UserEntity } from "../../user/entities"
+
 import { CreateCatRequest, UpdateCatRequest } from "../models"
 import { CatEntity } from "../entities"
-import { UserEntity } from "../../user/entities"
 
 @Injectable()
 export class CatService {
@@ -30,7 +32,7 @@ export class CatService {
     if (!user) {
       throw new BadRequestException(`Invalid user id: ${userId}`)
     }
-    const cat = CatEntity.from(request)
+    const cat = plainToInstance(CatEntity, request)
     cat.owner = user
     return this.catRepository.save(cat)
   }

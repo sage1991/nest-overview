@@ -1,8 +1,9 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm"
 import { JoinColumn } from "typeorm"
 
-import { CreateCatRequest, UpdateCatRequest } from "../models"
 import { UserEntity } from "../../user/entities"
+
+import { UpdateCatRequest } from "../models"
 
 @Entity({ name: "cat" })
 export class CatEntity {
@@ -18,13 +19,6 @@ export class CatEntity {
   @ManyToOne(() => UserEntity, (user) => user.cats)
   @JoinColumn({ name: "owner_id" })
   owner: UserEntity
-
-  static from(request: CreateCatRequest) {
-    const cat = new CatEntity()
-    cat.name = request.name
-    cat.age = request.age
-    return cat
-  }
 
   update(request: UpdateCatRequest) {
     this.age = request.age ?? this.age

@@ -1,6 +1,15 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm"
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  Index,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn
+} from "typeorm"
 
 import { CatEntity } from "../../cats/entities"
+
 import { CreateUserRequest } from "../models"
 
 @Entity({ name: "user" })
@@ -14,8 +23,21 @@ export class UserEntity {
   @Column({ name: "last_name" })
   lastName: string
 
+  @Index({ unique: true })
+  @Column({ name: "email" })
+  email: string
+
+  @Column({ name: "password" })
+  password: string
+
   @Column({ name: "is_active", default: true })
   isActive: boolean
+
+  @CreateDateColumn({ name: "created_at" })
+  createdAt: Date
+
+  @UpdateDateColumn({ name: "updated_at" })
+  updatedAt: Date
 
   @OneToMany(() => CatEntity, (cat) => cat.owner)
   cats: CatEntity[]

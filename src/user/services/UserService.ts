@@ -1,7 +1,9 @@
 import { Injectable, NotFoundException } from "@nestjs/common"
-import { Repository } from "typeorm"
-import { UserEntity } from "../entities"
+import { plainToInstance } from "class-transformer"
 import { InjectRepository } from "@nestjs/typeorm"
+import { Repository } from "typeorm"
+
+import { UserEntity } from "../entities"
 import { CreateUserRequest } from "../models"
 
 @Injectable()
@@ -20,8 +22,8 @@ export class UserService {
     return user
   }
 
-  create(request: CreateUserRequest) {
-    const user = UserEntity.from(request)
+  async create(request: CreateUserRequest) {
+    const user = plainToInstance(UserEntity, request)
     return this.repository.save(user)
   }
 

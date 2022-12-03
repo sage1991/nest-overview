@@ -1,8 +1,7 @@
 import { Module, ValidationPipe } from "@nestjs/common"
-import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR, APP_PIPE } from "@nestjs/core"
+import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE } from "@nestjs/core"
 
 import { HttpExceptionFilter } from "./filters"
-import { AuthGuard } from "./guards"
 import {
   LoggingInterceptor,
   TimeoutInterceptor,
@@ -10,9 +9,10 @@ import {
 } from "./interceptors"
 import { EnvModule } from "./env"
 import { DataSourceModule } from "./datasource"
+import { JwtModule } from "./jwt"
 
 @Module({
-  imports: [EnvModule, DataSourceModule],
+  imports: [EnvModule, DataSourceModule, JwtModule],
   providers: [
     {
       provide: APP_FILTER,
@@ -21,10 +21,6 @@ import { DataSourceModule } from "./datasource"
     {
       provide: APP_PIPE,
       useClass: ValidationPipe
-    },
-    {
-      provide: APP_GUARD,
-      useClass: AuthGuard
     },
     {
       provide: APP_INTERCEPTOR,

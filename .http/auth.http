@@ -1,0 +1,37 @@
+### Request local signup
+POST http://localhost:3000/auth/signup/local
+Content-Type: application/json
+
+{
+  "firstName": "harry",
+  "lastName": "kane",
+  "email": "harry.kane@kakaostyle.com",
+  "password": "harry.kane"
+}
+
+### Issue token
+POST http://localhost:3000/auth/token/issue
+Content-Type: application/json
+
+{
+  "email": "harry.kane@kakaostyle.com",
+  "password": "harry.kane"
+}
+
+### Refresh token
+POST http://localhost:3000/auth/token/refresh
+Content-Type: application/json
+
+{
+  "email": "harry.kane@kakaostyle.com",
+  "password": "harry.kane"
+}
+
+### Logout
+POST http://localhost:3000/auth/logout
+Content-Type: application/json
+
+{
+  "email": "harry.kane@kakaostyle.com",
+  "password": "harry.kane"
+}
