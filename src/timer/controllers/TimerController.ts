@@ -1,5 +1,8 @@
 import { Controller, Get, Param, ParseIntPipe } from "@nestjs/common"
 
+import { Public } from "../../core"
+
+@Public()
 @Controller("timer")
 export class TimerController {
   @Get(":timeout")

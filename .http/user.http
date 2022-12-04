@@ -2,15 +2,17 @@
 GET http://localhost:3000/user
 
 ### Find one user
-GET http://localhost:3000/user/1
+GET http://localhost:3000/user/60871ce2-1e78-4431-b249-f7b61d3b0fdb
 
 ### Create user
 POST http://localhost:3000/user
 Content-Type: application/json
 
 {
-  "firstName": "harry",
-  "lastName": "kane"
+  "firstName": "Heung Min",
+  "lastName": "Son",
+  "email": "sonny@kakaostyle.com",
+  "password": "12341234"
 }
 
 ### Delete user

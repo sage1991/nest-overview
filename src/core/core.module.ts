@@ -1,5 +1,6 @@
 import { Module, ValidationPipe } from "@nestjs/common"
 import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE } from "@nestjs/core"
+import { ConfigModule } from "@nestjs/config"
 
 import { HttpExceptionFilter } from "./filters"
 import {
@@ -7,12 +8,18 @@ import {
   TimeoutInterceptor,
   TransformResponseInterceptor
 } from "./interceptors"
-import { EnvModule } from "./env"
 import { DataSourceModule } from "./datasource"
 import { JwtModule } from "./jwt"
 
 @Module({
-  imports: [EnvModule, DataSourceModule, JwtModule],
+  imports: [
+    ConfigModule.forRoot({
+      envFilePath: "./env/.env",
+      isGlobal: true
+    }),
+    DataSourceModule,
+    JwtModule
+  ],
   providers: [
     {
       provide: APP_FILTER,

@@ -1,85 +1,64 @@
-import { BadRequestException, ForbiddenException, Injectable } from "@nestjs/common"
-import { plainToInstance } from "class-transformer"
+import { ForbiddenException, Injectable, NotFoundException } from "@nestjs/common"
 import { InjectRepository } from "@nestjs/typeorm"
-import { DataSource, Repository } from "typeorm"
 import { JwtService } from "@nestjs/jwt"
-import { ConfigService } from "@nestjs/config"
+import { plainToInstance } from "class-transformer"
+import { Repository } from "typeorm"
 
 import { UserEntity } from "../../user/entities"
-import { User } from "../../user/models"
-
-import { IssueTokenRequest, LocalSignupRequest, Token } from "../models"
+import { IssueTokenRequest, Token } from "../models"
 import { TokenEntity } from "../entities"
-import { compareHash, hash } from "../../utils"
+import { compareHash } from "../../utils"
 
 const ONE_WEEK = 60 * 60 * 24 * 7
 
 @Injectable()
 export class AuthService {
   constructor(
+    private readonly jwt: JwtService,
     @InjectRepository(UserEntity) private readonly userRepository: Repository<UserEntity>,
-    @InjectRepository(TokenEntity) private readonly tokenRepository: Repository<TokenEntity>,
-    private readonly jwtService: JwtService,
-    private readonly config: ConfigService,
-    private readonly datasource: DataSource
+    @InjectRepository(TokenEntity) private readonly tokenRepository: Repository<TokenEntity>
   ) {}
 
-  async signup(request: LocalSignupRequest) {
-    const userWithSameEmail = await this.userRepository.findOneBy({ email: request.email })
-    if (userWithSameEmail) {
-      throw new BadRequestException(`User already exist for given email: ${request.email}`)
+  async issueToken({ email, password }: IssueTokenRequest) {
+    const user = await this.userRepository.findOneBy({ email })
+    if (!user) {
+      throw new NotFoundException(`Cannot find user for given email: ${email}`)
     }
 
-    const queryRunner = this.datasource.createQueryRunner()
-    await queryRunner.connect()
-    await queryRunner.startTransaction()
-
-    try {
-      const userEntity = await queryRunner.manager.save(
-        plainToInstance(UserEntity, {
-          ...request,
-          password: await hash(request.password)
-        })
-      )
-
-      const token = await this.createJwt(userEntity)
-      await queryRunner.manager.save(plainToInstance(TokenEntity, { ...token, user: userEntity }))
-      await queryRunner.commitTransaction()
-
-      return plainToInstance(User, { ...userEntity, token })
-    } catch (e) {
-      await queryRunner.rollbackTransaction()
-      throw e
-    } finally {
-      await queryRunner.release()
-    }
-  }
-
-  async issueToken(request: IssueTokenRequest) {
-    const userEntity = await this.userRepository.findOneBy({ email: request.email })
-    if (!userEntity) {
-      throw new ForbiddenException("Access denied")
-    }
-    ;``
-    const isPasswordMatches = await compareHash({
-      plain: request.password,
-      encrypted: userEntity?.password
+    const isSame = await compareHash({
+      plain: password,
+      encrypted: user.password
     })
-    if (!isPasswordMatches) {
-      throw new ForbiddenException("Access denied")
+    if (!isSame) {
+      throw new ForbiddenException(`Access denied: invalid password`)
     }
 
-    const token = await this.createJwt(userEntity)
-    await this.tokenRepository.save(plainToInstance(TokenEntity, { ...token, user: userEntity }))
-    return token
+    const token = await this.tokenRepository.save(await this.createJwt(user))
+    return plainToInstance(Token, token, { excludeExtraneousValues: true })
   }
 
-  refreshToken() {
-    return ""
+  async refreshToken(userId: string, refreshToken: string) {
+    const user = await this.userRepository.findOneBy({ id: userId })
+    if (!user) {
+      throw new NotFoundException(`Cannot find user for given userId: ${userId}`)
+    }
+
+    const token = await this.tokenRepository.findOneBy({ refresh: refreshToken })
+    if (!token) {
+      throw new ForbiddenException("Access Denied: invalid token")
+    }
+
+    const newToken = await this.createJwt(user)
+    await this.tokenRepository.update({ id: token.id }, newToken)
+    return plainToInstance(Token, newToken, { excludeExtraneousValues: true })
   }
 
-  logout() {
-    return ""
+  async logout(userId: string) {
+    const user = await this.userRepository.findOneBy({ id: userId })
+    if (!user) {
+      throw new NotFoundException(`Cannot find user for given userId: ${userId}`)
+    }
+    await this.tokenRepository.delete({ user })
   }
 
   private async createJwt(user: UserEntity) {
@@ -88,9 +67,9 @@ export class AuthService {
       email: user.email
     }
     const [access, refresh] = await Promise.all([
-      this.jwtService.signAsync(payload),
-      this.jwtService.signAsync(payload, { expiresIn: ONE_WEEK })
+      this.jwt.signAsync(payload),
+      this.jwt.signAsync(payload, { expiresIn: ONE_WEEK })
     ])
-    return plainToInstance(Token, { access, refresh })
+    return plainToInstance(TokenEntity, { access, refresh, user })
   }
 }
